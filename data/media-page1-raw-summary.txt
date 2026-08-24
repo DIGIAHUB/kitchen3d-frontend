@@ -1,23 +1,27 @@
-WordPress Media Library Summary
-================================
-Total items in library: 124 (per site blueprint)
-Items retrieved via REST API page 1 (per_page=100): ~100 items
-Items retrieved via REST API page 2 (per_page=100): 24 items (IDs 24-120)
+WordPress Media Library - Complete Inventory
+============================================
+Total items confirmed via REST API: 124
+Fetched across 7 pages at per_page=20 (2026-08-24)
 
-All media files are hosted at:
-https://kitchen3d.co.uk/wp-content/uploads/
+API endpoint used:
+  https://kitchen3d.co.uk/wp-json/wp/v2/media?per_page=20&page=N&_fields=id,slug,title,source_url,mime_type,date,alt_text
 
-To download all media files, iterate through the full media API:
-https://kitchen3d.co.uk/wp-json/wp/v2/media?per_page=100&page=1
-https://kitchen3d.co.uk/wp-json/wp/v2/media?per_page=100&page=2
+All 124 items are listed in /media/media-index.json with:
+  - id, slug, title, alt_text, mime_type, source_url, date
 
-Key media items documented in /media/media-index.json:
-- Kitchen 3D logos (IDs 77, 120)
-- Before/after project images (IDs 4851-4857)
-- Kitchen renovation photos (IDs 4836, 4837)
-- Stockport installation photos (IDs 4804, 4805)
-- Service imagery (ID 4880 worktop, 4884 plumbing)
-- Gallery images - Dec 2025 batch (IDs 23-49): background/gallery images
+To download all files locally, run:
+  bash media/download-all.sh
 
-Download script example (wget):
-  wget -i <(curl -s 'https://kitchen3d.co.uk/wp-json/wp/v2/media?per_page=100' | python3 -c "import json,sys; [print(m['source_url']) for m in json.load(sys.stdin)]")
+File type breakdown (approximate):
+  - image/webp: ~60 files
+  - image/jpeg: ~35 files
+  - image/png:  ~25 files
+  - image/svg+xml: 4 files (Skilled_team, Quality_Finish, Full_Service, Trusted_Review)
+
+Key assets:
+  - Logos: kitchen-3d-logo-without-bg.png (id 120), kitchen-3d-logo-white-without-bg.png (id 77)
+  - Favicon: kitchen3d-favicon.png (id 4500)
+  - Before/after project images: ids 4851-4857, 4321-4327, 4307-4308
+  - Real project photos: ids 4330-4343 (IMG_* series, Jan 2026)
+  - Service imagery: 3494, 3559, 3566, 3600, 3618, 3642, 3668, 3678, 3694, 3707, 3714, 3737, 3744, 3757
+  - Brand icons (SVG): ids 2405-2408
