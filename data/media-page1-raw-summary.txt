@@ -1,0 +1,23 @@
+WordPress Media Library Summary
+================================
+Total items in library: 124 (per site blueprint)
+Items retrieved via REST API page 1 (per_page=100): ~100 items
+Items retrieved via REST API page 2 (per_page=100): 24 items (IDs 24-120)
+
+All media files are hosted at:
+https://kitchen3d.co.uk/wp-content/uploads/
+
+To download all media files, iterate through the full media API:
+https://kitchen3d.co.uk/wp-json/wp/v2/media?per_page=100&page=1
+https://kitchen3d.co.uk/wp-json/wp/v2/media?per_page=100&page=2
+
+Key media items documented in /media/media-index.json:
+- Kitchen 3D logos (IDs 77, 120)
+- Before/after project images (IDs 4851-4857)
+- Kitchen renovation photos (IDs 4836, 4837)
+- Stockport installation photos (IDs 4804, 4805)
+- Service imagery (ID 4880 worktop, 4884 plumbing)
+- Gallery images - Dec 2025 batch (IDs 23-49): background/gallery images
+
+Download script example (wget):
+  wget -i <(curl -s 'https://kitchen3d.co.uk/wp-json/wp/v2/media?per_page=100' | python3 -c "import json,sys; [print(m['source_url']) for m in json.load(sys.stdin)]")
