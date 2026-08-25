@@ -14,7 +14,7 @@ export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
-}): ReturnType<() => Promise<Metadata>> {
+}): Promise<Metadata> {
   const [page, post] = await Promise.all([
     getPageBySlug(params.slug),
     getPostBySlug(params.slug),
