@@ -10,7 +10,11 @@ export async function generateStaticParams() {
   return [...pageParams, ...postParams];
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): ReturnType<() => Promise<Metadata>> {
   const [page, post] = await Promise.all([
     getPageBySlug(params.slug),
     getPostBySlug(params.slug),
@@ -18,8 +22,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const item = page || post;
   if (!item) return {};
   return {
-    title: item.seoTitle || `${item.title} | Kitchen 3D Manchester`,
-    description: item.metaDescription || `${item.title} — Kitchen 3D Ltd, Manchester's trusted kitchen fitters.`,
+    title: item.seoTitle || (item.title + " | Kitchen 3D Manchester"),
+    description: item.metaDescription || (item.title + " - Kitchen 3D Ltd, Manchester kitchen fitters."),
   };
 }
 
@@ -40,7 +44,7 @@ function PageContent({ page }: { page: WixPage }) {
 
       {body?.service_includes && (
         <section className="mb-10">
-          <h2 className="text-2xl font-semibold mb-4">What&apos;s Included</h2>
+          <h2 className="text-2xl font-semibold mb-4">{"What's Included"}</h2>
           {Array.isArray(body.service_includes) ? (
             <ul className="list-disc list-inside space-y-1 text-gray-700">
               {body.service_includes.map((item: string, i: number) => (
@@ -94,19 +98,24 @@ function PageContent({ page }: { page: WixPage }) {
         <section className="mb-10">
           <h2 className="text-2xl font-semibold mb-4">Get a Free Quote</h2>
           <p className="text-gray-700 mb-4">
-            Fill in your details and we&apos;ll get back to you as soon as possible.
+            {"Fill in your details and we'll get back to you as soon as possible."}
           </p>
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
             <p className="text-sm text-gray-600 mb-4">
-              <strong>We collect:</strong> {(body.form.fields as string[]).join(", ")}
+              <strong>We collect:</strong>{" "}
+              {(body.form.fields as string[]).join(", ")}
             </p>
-            <a href="tel:07882116895"
-              className="inline-block bg-gray-900 text-white font-bold px-6 py-3 rounded-lg hover:bg-gray-700 transition">
+            <a
+              href="tel:07882116895"
+              className="inline-block bg-gray-900 text-white font-bold px-6 py-3 rounded-lg hover:bg-gray-700 transition"
+            >
               Call 07882 116895
             </a>
             <span className="mx-3 text-gray-400">or</span>
-            <a href="https://wa.me/447882116895"
-              className="inline-block bg-green-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-green-500 transition">
+            <a
+              href="https://wa.me/447882116895"
+              className="inline-block bg-green-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-green-500 transition"
+            >
               WhatsApp Us
             </a>
           </div>
@@ -123,8 +132,10 @@ function PageContent({ page }: { page: WixPage }) {
         <div className="mt-12 bg-gray-900 text-white rounded-xl p-8 text-center">
           <p className="text-xl font-bold mb-4">Ready to get started?</p>
           <p className="text-gray-300 mb-6">Call 07882 116895 or get a free quote online.</p>
-          <Link href="/contact"
-            className="bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-yellow-300 transition inline-block">
+          <Link
+            href="/contact"
+            className="bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-yellow-300 transition inline-block"
+          >
             Get a Free Quote
           </Link>
         </div>
@@ -134,14 +145,19 @@ function PageContent({ page }: { page: WixPage }) {
 }
 
 function PostContent({ post, related }: { post: WixPost; related: WixPost[] }) {
+  const dateStr = post.date
+    ? new Date(post.date).toLocaleDateString("en-GB", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "";
+
   return (
     <article className="max-w-4xl mx-auto px-6 py-16">
       <header className="mb-10">
         <p className="text-sm text-gray-500 mb-3">
-          {post.date
-            ? new Date(post.date).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" })
-            : ""}
-          {" "}&mdash; Written by MohammadReza Savadi, Owner, Kitchen 3D
+          {dateStr} &mdash; Written by MohammadReza Savadi, Owner, Kitchen 3D
         </p>
         <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">{post.title}</h1>
         {post.excerpt && (
@@ -151,11 +167,16 @@ function PostContent({ post, related }: { post: WixPost; related: WixPost[] }) {
 
       <div className="prose prose-gray max-w-none text-gray-700 leading-relaxed">
         <p>
-          This article was originally published at{" "}
-          <a href={post.link} className="text-yellow-600 underline hover:text-yellow-500"
-            target="_blank" rel="noopener noreferrer">
+          {"This article was originally published at "}
+          <a
+            href={post.link}
+            className="text-yellow-600 underline hover:text-yellow-500"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {post.link}
-          </a>.
+          </a>
+          {"."}
         </p>
       </div>
 
@@ -164,8 +185,10 @@ function PostContent({ post, related }: { post: WixPost; related: WixPost[] }) {
         <p className="text-gray-300 mb-6">
           109 five-star reviews. Fully insured. Serving Greater Manchester.
         </p>
-        <Link href="/contact"
-          className="bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-yellow-300 transition inline-block">
+        <Link
+          href="/contact"
+          className="bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-yellow-300 transition inline-block"
+        >
           Get a Free Quote
         </Link>
       </div>
@@ -175,8 +198,11 @@ function PostContent({ post, related }: { post: WixPost; related: WixPost[] }) {
           <h2 className="text-2xl font-bold mb-6">More from the Blog</h2>
           <div className="grid sm:grid-cols-3 gap-6">
             {related.map((rp) => (
-              <Link key={rp.slug} href={`/${rp.slug}`}
-                className="border border-gray-200 rounded-lg p-5 hover:border-yellow-400 hover:shadow-md transition">
+              <Link
+                key={rp.slug}
+                href={"/" + rp.slug}
+                className="border border-gray-200 rounded-lg p-5 hover:border-yellow-400 hover:shadow-md transition"
+              >
                 <p className="text-xs text-gray-500 mb-1">{rp.date}</p>
                 <p className="font-semibold text-gray-900 leading-snug text-sm">{rp.title}</p>
               </Link>
