@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["kitchen3d.co.uk", "www.wixapis.com"],
+    remotePatterns: [
+      { protocol: "https", hostname: "kitchen3d.co.uk" },
+      { protocol: "https", hostname: "www.wixapis.com" },
+    ],
   },
 };
 
