@@ -22,7 +22,7 @@ Set these in Vercel project settings (Settings → Environment Variables):
 | `WIX_SITE_ID` | Wix MetaSite ID | `543768f5-be18-4f7c-bb3b-380f4b05c925` |
 | `WIX_API_KEY` | Wix API key (IST. token with Wix Data read access) | `IST.eyJl...` |
 
-Copy `.env.local.example` to `.env.local` for local development and fill in `WIX_API_KEY`.
+Use `.env.example` as the current blank template. Copy it to `.env.local` only for an explicitly authorised Wix read session, then supply process-appropriate values without committing them. The existing `.env.local.example` is retained as historical repository evidence.
 
 ### Generating a Wix API Key
 
@@ -83,13 +83,38 @@ All slugs match the original WordPress URLs exactly (for SEO):
 ## Local Development
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 # Fill in WIX_API_KEY in .env.local
 npm install
 npm run dev
 ```
 
 Opens at `http://localhost:3000`.
+
+PowerShell equivalent for the template copy:
+
+```powershell
+Copy-Item -LiteralPath .env.example -Destination .env.local
+```
+
+This repository does not yet have an approved Node/npm pin or lockfile. Do not treat a fresh dependency resolution as a reproducible project baseline until the dependency-freeze gate is approved.
+
+## Local Validation
+
+The hygiene checks are intentionally non-mutating:
+
+```bash
+npm run lint
+npm run typecheck
+npm run check:inventory
+npm run check:content
+npm run validate:local
+```
+
+- `check:inventory` verifies the controlled 18-page, 7-post and 123-enumerated-media evidence while retaining the unresolved 124-versus-123 media-count conflict.
+- `check:content` scans public rendering source and exits non-zero when it finds editor-note rendering, known placeholders, or claims held by the K3D-001 evidence gate. It reports locations only and never rewrites content.
+- `validate:local` combines lint, type-check, inventory and content gates. It may remain red until a separately approved content-containment change set resolves existing public-source findings.
+- A credential-backed production build is not included in `validate:local`. It requires separate approval for process-scoped, least-privilege Wix read credentials.
 
 ## Deployment to Vercel
 
