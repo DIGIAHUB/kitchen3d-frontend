@@ -40,12 +40,12 @@ const rules = [
   {
     id: "HELD_BUSINESS_FACT",
     pattern:
-      /\bKitchen\s*3D(?:\s+(?:Ltd|Limited))?\b|\b43\s+Manley\s+Road\b|\b07882\s*116895\b|\b07882116895\b|\bkitchen3dltd@gmail\.com\b/i,
+      /\bKitchen\s*3D(?:\s+(?:Ltd|Limited))?\b|\b43\s+Manley\s+Road\b|(?<!\d)(?:\+?44|0044|0)[\s().-]*7882[\s().-]*116[\s().-]*895\b|\bkitchen3dltd@gmail\.com\b/i,
   },
   {
     id: "HELD_SERVICE_AREA",
     pattern:
-      /\bGreater\s+Manchester\b|\bSalford\b|\bBolton\b|\bAshton-under-Lyne\b|\bMiddleton\b|\bStockport\b|\bBury\b/i,
+      /\bGreater\s+Manchester\b|\bManchester\b|\bSalford\b|\bBolton\b|\bHyde\b|\bAshton-under-Lyne\b|\bMiddleton\b|\bStockport\b|\bBury\b/i,
   },
   {
     id: "HELD_COMMERCIAL_OFFER",

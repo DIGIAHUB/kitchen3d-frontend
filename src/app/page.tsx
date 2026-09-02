@@ -23,29 +23,15 @@ export default async function HomePage() {
     <div>
       <section className="bg-gray-900 text-white py-24 px-6 text-center">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          {page?.title || "Kitchen Fitters Manchester"}
+          {page?.title || "Home"}
         </h1>
         <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          Manchester&apos;s trusted kitchen fitters. 109 five-star reviews. Supply &amp; install or installation only.
+          Supply &amp; install or installation only.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/contact" className="bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-yellow-300 transition">
             Get a Free Quote
           </Link>
-          <a href="tel:07882116895" className="border border-white text-white px-8 py-3 rounded-lg hover:bg-white hover:text-gray-900 transition">
-            Call 07882 116895
-          </a>
-        </div>
-        <p className="mt-6 text-sm text-gray-400">Serving Manchester, Stockport, Bolton, Hyde, Bury &amp; surrounding areas.</p>
-      </section>
-
-      <section className="bg-yellow-400 py-6 px-6">
-        <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-8 text-gray-900 font-semibold text-sm">
-          <span>★ 109 Google Reviews</span>
-          <span>★ Checkatrade Rated</span>
-          <span>★ MyBuilder Rated</span>
-          <span>Fully Insured</span>
-          <span>Trade Accounts: Wren, Howdens, B&amp;Q, Magnet</span>
         </div>
       </section>
 
@@ -84,7 +70,7 @@ export default async function HomePage() {
       <section className="py-16 px-6 text-center">
         <h2 className="text-3xl font-bold mb-4">Ready to Start Your Project?</h2>
         <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-          Get a free, no-obligation quote. We cover Manchester, Stockport, Bolton, Hyde, Bury and surrounding areas.
+          Get a free, no-obligation quote.
         </p>
         <Link href="/contact" className="bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-yellow-300 transition inline-block">
           Get a Free Quote

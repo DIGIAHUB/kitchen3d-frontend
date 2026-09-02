@@ -22,8 +22,7 @@ export async function generateMetadata({
   const item = page || post;
   if (!item) return {};
   return {
-    title: item.seoTitle || (item.title + " | Kitchen 3D Manchester"),
-    description: item.metaDescription || (item.title + " - Kitchen 3D Ltd, Manchester kitchen fitters."),
+    title: item.title,
   };
 }
 
@@ -88,12 +87,6 @@ function PageContent({ page }: { page: WixPage }) {
         </section>
       )}
 
-      {body?.content && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
-          <p className="text-xl text-green-800 font-semibold">{body.content}</p>
-        </div>
-      )}
-
       {body?.form && (
         <section className="mb-10">
           <h2 className="text-2xl font-semibold mb-4">Get a Free Quote</h2>
@@ -105,33 +98,14 @@ function PageContent({ page }: { page: WixPage }) {
               <strong>We collect:</strong>{" "}
               {(body.form.fields as string[]).join(", ")}
             </p>
-            <a
-              href="tel:07882116895"
-              className="inline-block bg-gray-900 text-white font-bold px-6 py-3 rounded-lg hover:bg-gray-700 transition"
-            >
-              Call 07882 116895
-            </a>
-            <span className="mx-3 text-gray-400">or</span>
-            <a
-              href="https://wa.me/447882116895"
-              className="inline-block bg-green-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-green-500 transition"
-            >
-              WhatsApp Us
-            </a>
           </div>
         </section>
-      )}
-
-      {page.note && (
-        <div className="bg-blue-50 border border-blue-200 rounded p-4 text-sm text-blue-800 mt-6">
-          <strong>Note:</strong> {page.note}
-        </div>
       )}
 
       {page.slug !== "thank-you" && (
         <div className="mt-12 bg-gray-900 text-white rounded-xl p-8 text-center">
           <p className="text-xl font-bold mb-4">Ready to get started?</p>
-          <p className="text-gray-300 mb-6">Call 07882 116895 or get a free quote online.</p>
+          <p className="text-gray-300 mb-6">Get a free quote online.</p>
           <Link
             href="/contact"
             className="bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-yellow-300 transition inline-block"
@@ -157,7 +131,7 @@ function PostContent({ post, related }: { post: WixPost; related: WixPost[] }) {
     <article className="max-w-4xl mx-auto px-6 py-16">
       <header className="mb-10">
         <p className="text-sm text-gray-500 mb-3">
-          {dateStr} &mdash; Written by MohammadReza Savadi, Owner, Kitchen 3D
+          {dateStr}
         </p>
         <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">{post.title}</h1>
         {post.excerpt && (
@@ -181,10 +155,7 @@ function PostContent({ post, related }: { post: WixPost; related: WixPost[] }) {
       </div>
 
       <div className="mt-12 bg-gray-900 text-white rounded-xl p-8 text-center">
-        <p className="text-xl font-bold mb-4">Need a kitchen fitter in Manchester?</p>
-        <p className="text-gray-300 mb-6">
-          109 five-star reviews. Fully insured. Serving Greater Manchester.
-        </p>
+        <p className="text-xl font-bold mb-4">Need a kitchen fitter?</p>
         <Link
           href="/contact"
           className="bg-yellow-400 text-gray-900 font-bold px-8 py-3 rounded-lg hover:bg-yellow-300 transition inline-block"

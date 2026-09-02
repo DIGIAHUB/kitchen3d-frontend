@@ -2,10 +2,7 @@ import { getAllPosts } from "@/lib/wix";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Kitchen Fitting & Renovation Blog | Kitchen 3D Manchester",
-  description: "Tips, guides, and insights on kitchen fitting, renovation, and installation from Kitchen 3D Ltd in Manchester.",
-};
+export const metadata: Metadata = {};
 
 export default async function BlogsPage() {
   const posts = await getAllPosts();
@@ -13,10 +10,7 @@ export default async function BlogsPage() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-16">
       <header className="mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Kitchen Fitting Blog</h1>
-        <p className="text-xl text-gray-600">
-          Tips, guides, and insights from Kitchen 3D — Manchester&apos;s trusted kitchen fitters.
-        </p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Blog</h1>
       </header>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
