@@ -3,6 +3,8 @@ node_modules/
 
 # Next.js local output
 .next/
+.next-preview/
+.next-candidate/
 
 # Local environment files
 .env*

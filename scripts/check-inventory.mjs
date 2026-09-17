@@ -120,7 +120,7 @@ function validateContentRecords(label, records, files, requiredFields) {
 }
 
 async function main() {
-  const pageFiles = await listJsonFiles("pages");
+  const pageFiles = await listJsonFiles("data/source-pages");
   const postFiles = await listJsonFiles("posts");
   const allDataJsonFiles = await listJsonFiles("data");
   const rawMediaFiles = allDataJsonFiles.filter((file) =>

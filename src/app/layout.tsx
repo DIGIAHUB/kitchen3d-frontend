@@ -1,43 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./preview.css";
+import { PreviewShell } from "@/components/preview/site-shell";
 
-export const metadata: Metadata = {};
+const preview = process.env.K3D_LOCAL_PREVIEW === "1";
+export const metadata: Metadata = {
+  title: { default: "Kitchen3D | A kitchen that feels like home", template: preview ? "%s | Kitchen3D preview" : "%s | Kitchen3D" },
+  description: "Kitchen fitting and complete kitchen projects across Greater Manchester. Discuss your plans with Reza at Kitchen3D Ltd.",
+  // Release/indexing remains a separate gate; neither local mode enables it.
+  robots: { index: false, follow: false },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body className="min-h-screen bg-white text-gray-900 font-sans">
-        <header className="bg-gray-900 text-white py-4 px-6 flex items-center justify-between">
-          <a href="/" className="text-xl font-bold tracking-tight">Home</a>
-          <nav className="hidden md:flex gap-6 text-sm">
-            <a href="/about" className="hover:text-yellow-400">About</a>
-            <a href="/services" className="hover:text-yellow-400">Services</a>
-            <a href="/projects" className="hover:text-yellow-400">Projects</a>
-            <a href="/testimonials" className="hover:text-yellow-400">Testimonials</a>
-            <a href="/faqs" className="hover:text-yellow-400">FAQ&apos;s</a>
-            <a href="/blogs" className="hover:text-yellow-400">Blogs</a>
-            <a href="/contact" className="hover:text-yellow-400">Contact</a>
-          </nav>
-          <a href="/contact" className="bg-yellow-400 text-gray-900 font-semibold px-4 py-2 rounded text-sm hover:bg-yellow-300 transition">
-            Free Quote
-          </a>
-        </header>
-        <main>{children}</main>
-        <footer className="bg-gray-900 text-gray-300 py-10 px-6 mt-16">
-          <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8">
-            <div />
-            <div />
-            <div>
-              <p className="font-bold text-white mb-2">Quick Links</p>
-              <nav className="flex flex-col gap-1 text-sm">
-                <a href="/services" className="hover:text-yellow-400">Services</a>
-                <a href="/projects" className="hover:text-yellow-400">Projects</a>
-                <a href="/contact" className="hover:text-yellow-400">Get a Free Quote</a>
-              </nav>
-            </div>
-          </div>
-        </footer>
-      </body>
-    </html>
-  );
+  return <html lang="en-GB"><body><PreviewShell preview={preview}>{children}</PreviewShell></body></html>;
 }

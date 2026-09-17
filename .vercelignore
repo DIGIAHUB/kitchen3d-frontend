@@ -1,0 +1,15 @@
+# Staging source allowlist: no raw exports, audit reports, credentials or local builds.
+*
+!package.json
+!package-lock.json
+!next.config.mjs
+!next-env.d.ts
+!tsconfig.json
+!postcss.config.mjs
+!tailwind.config.ts
+!src
+!src/**
+!config
+!config/**
+!public
+!public/**

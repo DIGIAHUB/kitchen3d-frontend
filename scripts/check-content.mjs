@@ -1,6 +1,8 @@
 import { access, readdir, readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { approvedPublicClaim } from "../config/approved-public-claims.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const scanRoots = ["src", "public"];
@@ -107,9 +109,11 @@ async function main() {
     .sort();
 
   const findings = [];
+  const approved = [];
 
   for (const relativePath of files) {
     const contents = await readFile(path.join(root, relativePath), "utf8");
+    const sourceHash = createHash("sha256").update(contents).digest("hex");
     const lines = contents.replaceAll("\r\n", "\n").split("\n");
 
     for (const [index, originalLine] of lines.entries()) {
@@ -120,19 +124,25 @@ async function main() {
       for (const rule of rules) {
         const match = normalisedLine.match(rule.pattern);
         if (match) {
-          findings.push({
+          const finding = {
             file: relativePath.split(path.sep).join("/"),
             line: index + 1,
             column: (match.index ?? 0) + 1,
             rule: rule.id,
             text: originalLine.trim().slice(0, 180),
-          });
+          };
+          if (approvedPublicClaim(finding.file, sourceHash, finding.rule)) {
+            approved.push(finding);
+          } else {
+            findings.push(finding);
+          }
         }
       }
     }
   }
 
   console.log(`PUBLIC_SOURCE_FILES_SCANNED=${files.length}`);
+  console.log(`HASH_LOCKED_OWNER_CLAIMS=${approved.length}`);
 
   if (findings.length > 0) {
     for (const finding of findings) {
@@ -149,7 +159,7 @@ async function main() {
   } else {
     console.log("CONTENT_SAFETY_STATUS=PASS");
     console.log("PUBLICATION_STATUS=REVIEW_REQUIRED");
-    console.log("ERRORS=0 WARNINGS=0 KNOWN_CONFLICTS=0");
+    console.log(`ERRORS=0 WARNINGS=${approved.length} KNOWN_CONFLICTS=0`);
   }
 }
 
