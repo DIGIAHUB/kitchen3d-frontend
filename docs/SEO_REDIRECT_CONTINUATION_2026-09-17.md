@@ -15,10 +15,12 @@ and remaining-task statements in earlier 17 September checkpoints.
   no fabricated project evidence, reviews or unconfirmed service was substituted.
   The owner-directed wardrobe article hold also remains. Original exports stay
   untouched; the accepted homepage's labelled portfolio preview is unchanged.
-- Inert sitemap preparation selects 20 editorial/core URLs and excludes held
-  and functional routes. Draft organisation data contains no ratings, address,
-  qualifications or invented dates. Neither helper is imported by the app:
-  no sitemap, structured data or indexing was published.
+- The release-gated sitemap selects 20 editorial/core URLs and excludes held
+  and functional routes. In all current modes it returns an empty sitemap,
+  `robots.txt` disallows crawling and organisation data is not rendered. Only
+  an exact server-side `K3D_RELEASE_INDEXING=1` outside local modes can expose
+  the sitemap and bounded organisation data. It contains no ratings, address,
+  qualifications or invented dates. No indexing was activated.
 
 ## Verification
 

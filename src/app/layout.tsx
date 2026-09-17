@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./preview.css";
 import { PreviewShell } from "@/components/preview/site-shell";
+import { releaseIndexingEnabled } from "@/lib/release-metadata";
+import { prepareOrganisationData, serializeStructuredData } from "@/lib/seo-preparation";
 
 const preview = process.env.K3D_LOCAL_PREVIEW === "1";
 export const metadata: Metadata = {
@@ -12,5 +14,6 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en-GB"><body><PreviewShell preview={preview}>{children}</PreviewShell></body></html>;
+  const structuredData = releaseIndexingEnabled() ? serializeStructuredData(prepareOrganisationData()) : null;
+  return <html lang="en-GB"><body>{structuredData ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData }} /> : null}<PreviewShell preview={preview}>{children}</PreviewShell></body></html>;
 }

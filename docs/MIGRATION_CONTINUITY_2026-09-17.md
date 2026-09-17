@@ -95,6 +95,14 @@ owner-confirmed wording. `CONTENT_SAFETY_STATUS=PASS` now means only that those
 exact reviewed source files have not changed; publication remains review-required.
 See `CONTENT_CLAIM_REVIEW_2026-09-18.md`. The media hold below is unchanged.
 
+### 18 September dormant SEO route update
+
+The 20 reviewed sitemap candidates and bounded organisation data now have a
+server-only release gate. Current preview, candidate and normal environments
+remain `noindex, nofollow`, `robots.txt` disallows all and the sitemap is empty.
+`K3D_RELEASE_INDEXING=1` is a future explicit release setting, not a value set
+in any current environment. This adds no CMS write, deployment or public index.
+
 1. Finish existing URL outcomes, launch-safe asset delivery, removal/omission of
    internal review-only notes and unresolved portfolio sections; maintain the
    accepted design. New portfolio publication stays deferred.

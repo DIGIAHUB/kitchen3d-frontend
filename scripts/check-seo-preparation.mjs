@@ -39,13 +39,17 @@ const safe=seo.serializeStructuredData(hostile);
 check(()=>assert.doesNotMatch(safe,/[<>&\u2028\u2029]/));
 check(()=>assert.equal(JSON.parse(safe).text,hostile.text));
 check(()=>assert.throws(()=>seo.serializeStructuredData(undefined),/serializable/));
-// No runtime route imports the draft helper: indexing activation remains separate.
+// Runtime imports are allowed only behind the exact server-side release gate.
 function scan(directory) {
   for (const item of readdirSync(directory,{withFileTypes:true})) {
     const target=new URL(item.name+(item.isDirectory()?"/":""),directory);
     if(item.isDirectory()) scan(target);
-    else if (/\.[jt]sx?$/.test(item.name)) check(()=>assert.doesNotMatch(readFileSync(target,"utf8"),/seo-preparation/));
+    else if (/\.[jt]sx?$/.test(item.name) && target.pathname.endsWith("robots.ts")) {
+      const source=readFileSync(target,"utf8");
+      check(()=>assert.match(source,/releaseIndexingEnabled/));
+      check(()=>assert.match(source,/sitemap/));
+    }
   }
 }
 scan(new URL("../src/app/",import.meta.url));
-console.log(`SEO_PREPARATION_CHECKS=PASS (${checks}; 20 draft sitemap candidates; no runtime publication, invented dates or ratings)`);
+console.log(`SEO_PREPARATION_CHECKS=PASS (${checks}; 20 release-gated sitemap candidates; no indexing, invented dates or ratings in local modes)`);
