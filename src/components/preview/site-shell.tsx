@@ -25,7 +25,7 @@ export function PreviewShell({ children, preview = true }: { children: React.Rea
       <footer className="site-footer">
         <div className="container footer-grid">
           <div><p className="footer-brand">Kitchen3D<span> Ltd</span></p><p>Kitchens made for living.<br />Manchester &amp; surrounding areas.</p></div>
-          <div><h2>Let’s talk kitchens</h2><a href="tel:07882116895">07882 116 895</a><a href="mailto:kitchen3dltd@gmail.com">kitchen3dltd@gmail.com</a><p>Monday–Friday · 8am–6pm<br />Visits by arrangement at your property.</p></div>
+          <div><h2>Let’s talk kitchens</h2><a href="tel:07882116895">07882 116 895</a><a href="mailto:kitchen3dltd@gmail.com">kitchen3dltd@gmail.com</a><p>Office contact hours · Monday–Friday, 8am–6pm<br />Site visits by arrangement, Monday–Saturday, 9am–6pm.</p></div>
           <nav aria-label="Footer navigation"><h2>Find your next step</h2><Link href="/installation-enquiry">I’ve bought my kitchen</Link><Link href="/plan-your-kitchen">I need a complete kitchen</Link><Link href="/services">Explore all services</Link><Link href="/blogs">Kitchen planning guides</Link><Link href="/about">About Kitchen3D</Link><Link href="/contact">Contact Reza</Link><Link href="/faqs">Kitchen questions</Link><Link href="/#projects">View Our Projects</Link></nav>
         </div>
         <div className="container footer-bottom"><span>KITCHEN3D LTD</span><span>{preview ? "Internal preview · Not a live booking service" : "Visits by arrangement · Online booking not yet available"}</span></div>

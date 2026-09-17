@@ -37,7 +37,7 @@ const reviewedFiles = Object.freeze({
   "src/components/information-page.tsx": "6d4d15b1c0aaf16eafd0db8104e56aecb57d70d40486ac6b16d0889e6d71d3b9",
   "src/components/preview/enquiry-wizard.tsx": "5fc9bc92c714cdf6cc8b8612f60fac0148a8bc389374d1f5a7fc9caf1585422f",
   "src/components/preview/home.tsx": "40bc56398c467313a851b7849c6d20bfdcbe36096858e0cb9464918f8a54e823",
-  "src/components/preview/site-shell.tsx": "3090e65dcad5d2ddbebecb273acb8c518498ece170f0c8bb69d126614858a0c6",
+  "src/components/preview/site-shell.tsx": "6822d9cc243d8b528b43f4174324f32d50ea5bfd5950ee3ddbf63d25b04e6c22",
   "src/lib/articles.ts": "958b366e6cb10ab0167b9555576045293a0a4f9e0df3d24f9352de02b6948243",
   "src/lib/migration-routes.ts": "b92a9644db6557a8a2675a49916ce892f52fa8d36bf6d7df6c268b9458ce119d",
   "src/lib/seo-preparation.ts": "f497c23d85b74de822892047f7d9c2608a8ed0f286aa2fc3eb17f6e1abd6e307",
