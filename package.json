@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit --incremental false",
     "check:inventory": "node scripts/check-inventory.mjs",
     "check:content": "node scripts/check-content.mjs",
-    "validate:local": "npm run lint && npm run typecheck && npm run check:inventory && npm run check:content"
+    "check:form-evidence": "node scripts/check-native-enquiry-form-evidence.mjs",
+    "validate:local": "npm run lint && npm run typecheck && npm run check:inventory && npm run check:content && npm run check:form-evidence"
   },
   "dependencies": {
     "react": "19.3.0",

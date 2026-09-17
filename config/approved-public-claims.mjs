@@ -29,7 +29,7 @@ const reviewedFiles = Object.freeze({
   "src/app/contact/page.tsx": "b5171b4f613eb112fdbdc95a642318b1e999f8d5b205947a1d9ae3d6de8bb3ca",
   "src/app/faqs/page.tsx": "63f284be41826eb879b555790f819cea9434b75692c5b73dc0fbebc19b2f2cae",
   "src/app/installation-enquiry/page.tsx": "41eee3b2d6a5da80ba6296b14d037457cffe92ff2e53143755518b2fc68b5093",
-  "src/app/layout.tsx": "ba9e99c8e47339e93754d05bcd5c6d81430b5f3d88a09821dfbef2db0def58cd",
+  "src/app/layout.tsx": "53172d877a11944c28b729a2f38f59cdcd832943a2cbcdcbecccf647a414354d",
   "src/app/not-found.tsx": "ca563dfbd6b6f684ee51693acd57d6e88755e47fb2e89109f2316beb74a1517a",
   "src/app/services/page.tsx": "e21d7aa2b4bb723699f2ffe0ccb6660f7adfcd50639d8f465614921eb07ee186",
   "src/app/thank-you/page.tsx": "a7670334e84b05b849d56a9d4825541f5f7ac9c0ebf67e991d4c44b4a0dcf507",
@@ -43,6 +43,7 @@ const reviewedFiles = Object.freeze({
   "src/lib/seo-preparation.ts": "f497c23d85b74de822892047f7d9c2608a8ed0f286aa2fc3eb17f6e1abd6e307",
   "src/lib/service-pages.ts": "7f09e260530f143e517a5f39942e83a8871c8bcd6b35039c577cf3979da3d7f0",
   "src/lib/wix.ts": "f5445ad3f58ada9c79231dde238e3d3274bbbfaec2460cf4b0eb267e95c90080",
+  "src/app/robots.ts": "d454e2655b5fecf6b735cd166e19a516fbac50916c0fad00e53077ad6d069c7e",
 });
 
 const reviewedSelectorFiles = Object.freeze({

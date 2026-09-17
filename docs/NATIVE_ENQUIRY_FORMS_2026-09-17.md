@@ -105,6 +105,12 @@ offline templates, not the dashboard inventory. These tests do not prove live
 delivery or the native form schemas. No dependencies or application rendering
 were changed in this continuation.
 
+`config/native-enquiry-form-evidence.mjs` now preserves the two dashboard IDs,
+observed required fields and conditional contact rules as **evidence only**.
+`npm run check:form-evidence` compares those observations to the local logical
+target contract while asserting that runtime bindings are still null. It neither
+reads Wix nor establishes REST schema, permission, site isolation or activation.
+
 ## Next technical gates
 
 1. Obtain the saved form schemas through an independently site-isolated,
