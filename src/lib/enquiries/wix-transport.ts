@@ -62,8 +62,8 @@ async function readReceipt(response: Response, signal: AbortSignal): Promise<unk
 }
 
 /** Exactly one attempt; any uncertain outcome requires reconciliation, never a
- * blind retry. An injected transport is mandatory and the live route never
- * imports this module. Synthetic tests provide all configuration and requests.
+ * blind retry. An injected transport is mandatory. Synthetic tests provide all
+ * configuration and requests; the route supplies only server-owned values.
  * REST envelope: { submission, captchaToken }; response: { submission }.
  */
 export async function sendEnquiryOnce(

@@ -14,7 +14,8 @@
     "check:content": "node scripts/check-content.mjs",
     "check:form-evidence": "node scripts/check-native-enquiry-form-evidence.mjs",
     "check:upload-intake": "node scripts/check-upload-intake.mjs",
-    "validate:local": "npm run lint && npm run typecheck && npm run check:inventory && npm run check:content && npm run check:form-evidence && npm run check:upload-intake"
+    "check:wix-transport": "node scripts/check-wix-transport.mjs",
+    "validate:local": "npm run lint && npm run typecheck && npm run check:inventory && npm run check:content && npm run check:form-evidence && npm run check:upload-intake && npm run check:wix-transport"
   },
   "dependencies": {
     "react": "19.3.0",

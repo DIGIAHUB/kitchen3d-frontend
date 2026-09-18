@@ -4,8 +4,8 @@ import vm from "node:vm";
 import ts from "typescript";
 import { nativeEnquiryFormEvidence } from "../config/native-enquiry-form-evidence.mjs";
 
-// Offline evidence comparison only: no credentials, HTTP, customer data or
-// runtime form bindings. Dashboard observation is deliberately not API proof.
+// Offline evidence comparison only: no credentials, HTTP or customer data.
+// Dashboard observation is deliberately not API proof.
 let checks = 0;
 function check(name, test) {
   try { test(); checks++; } catch (cause) { throw new Error(`Native form evidence check failed: ${name}`, { cause }); }
@@ -26,6 +26,7 @@ async function loadAdapter() {
 
 const adapter = await loadAdapter();
 const source = await readFile(new URL("../src/lib/enquiries/wix-submission-adapter.ts", import.meta.url), "utf8");
+const liveConfigSource = await readFile(new URL("../src/lib/enquiries/live-config.ts", import.meta.url), "utf8");
 const expectedShared = [
   "k3d_services", "k3d_trade_arrangement", "k3d_project_files", "k3d_visit_date", "k3d_visit_time_preference", "k3d_project_notes",
   "k3d_contact_name", "k3d_project_postcode", "k3d_project_address", "k3d_contact_phone", "k3d_contact_email", "k3d_preferred_contact",
@@ -33,8 +34,13 @@ const expectedShared = [
 
 check("evidence is explicitly non-runtime", () => assert.equal(nativeEnquiryFormEvidence.evidenceOnly, true));
 check("evidence uses the exact Kitchen3D site", () => assert.equal(nativeEnquiryFormEvidence.siteId, adapter.KITCHEN3D_ENQUIRY_SITE_ID));
-check("runtime bindings remain null", () => assert.deepEqual(JSON.parse(JSON.stringify(adapter.inactiveEnquiryBindings)), { installation: null, complete: null }));
+check("legacy inactive bindings remain null", () => assert.deepEqual(JSON.parse(JSON.stringify(adapter.inactiveEnquiryBindings)), { installation: null, complete: null }));
 check("source has no import of dashboard evidence", () => assert.doesNotMatch(source, /native-enquiry-form-evidence/));
+check("live configuration keeps the observed form IDs server-owned", () => {
+  assert.match(liveConfigSource, /d1cd3c08-6d65-4000-9ef0-d65081a506fe/);
+  assert.match(liveConfigSource, /0d5b3e9d-085a-4c62-90b1-07c4794382d8/);
+  assert.doesNotMatch(liveConfigSource, /native-enquiry-form-evidence/);
+});
 for (const journey of ["installation", "complete"]) {
   const observed = nativeEnquiryFormEvidence.journeys[journey];
   const targets = Object.keys(adapter.expectedEnquiryTargets[journey]);
@@ -45,4 +51,4 @@ for (const journey of ["installation", "complete"]) {
   check(`${journey}: observed conditional targets remain represented`, () => assert.deepEqual(Object.values(observed.conditionalRequired).sort(), ["k3d_contact_email", "k3d_contact_phone"]));
 }
 console.log(`NATIVE_FORM_EVIDENCE=PASS (${checks} offline checks)`);
-console.log("DASHBOARD_OBSERVATION_ONLY; REMOTE_SCHEMA_NOT_VERIFIED; RUNTIME_BINDINGS=NULL; LIVE_COLLECTION=DISABLED");
+console.log("DASHBOARD_OBSERVATION_ONLY; REMOTE_SCHEMA_NOT_VERIFIED; SERVER_BINDINGS_DECLARED; NO_REMOTE_WRITES");

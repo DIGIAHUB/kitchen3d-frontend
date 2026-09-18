@@ -171,9 +171,15 @@ await check("client runtime cannot invoke transport", async () => {
   try { assert.equal((await call(sample)).result.code, "TRANSPORT_DISABLED"); }
   finally { delete sandbox.window; }
 });
-await check("live route remains disconnected", () => {
+await check("live route keeps its server-side submission boundary", () => {
   const source = readFileSync(new URL("../src/app/api/enquiries/route.ts", import.meta.url), "utf8");
-  assert.doesNotMatch(source, /import|sendEnquiryOnce/); assert.match(source, /status: 503/);
+  assert.match(source, /readEnquiryJson/);
+  assert.match(source, /liveEnquiryBindings/);
+  assert.match(source, /sendEnquiryOnce/);
+  assert.match(source, /https:\/\/kitchen3d\.co\.uk/);
+  assert.match(source, /appointment is created/i);
+  assert.doesNotMatch(source, /console\./);
+  assert.doesNotMatch(source, /process\.env\.WIX_FORMS_API_KEY/);
 });
 const { coordinateEnquiry } = load("delivery-coordinator");
 const requestKey = "33333333-3333-4333-8333-333333333333";
@@ -282,4 +288,4 @@ await check("input and form configuration cannot change after admission begins",
   assert.equal(submitted.submissions.k3d_contact_name, sample.name);
 });
 console.log("WIX_DELIVERY_CHECKS=PASS (" + checks + " checks; " + intercepted + " intercepted attempts; real network=0)");
-console.log("ROUTE_DISABLED; NO_REAL_CREDENTIALS; NO_REMOTE_WRITES; NO_AUTOMATIC_RETRY");
+console.log("ROUTE_BOUNDARY_CHECKED; NO_REAL_CREDENTIALS; NO_REMOTE_WRITES; NO_AUTOMATIC_RETRY");
