@@ -254,8 +254,13 @@ Set these in Vercel project settings (Settings → Environment Variables):
 |---|---|---|
 | `WIX_SITE_ID` | Wix MetaSite ID | `543768f5-be18-4f7c-bb3b-380f4b05c925` |
 | `WIX_API_KEY` | Wix API key with Wix Data read access | Set only in a server-side environment variable; never commit, paste or display its value. |
+| `WIX_FORMS_API_KEY` | Reserved separate key for a future Wix Forms server integration | Branch-scoped Preview only. The current application does not read this value and cannot collect enquiries. |
 
 Use `.env.example` as the current blank template. Copy it to `.env.local` only for an explicitly authorised Wix read session, then supply process-appropriate values without committing them. The existing `.env.local.example` is retained as historical repository evidence.
+
+`WIX_API_KEY` remains the CMS read credential. Do not replace it with a Forms
+credential. `WIX_FORMS_API_KEY` is deliberately separate and has no effect
+until a separately approved live-enquiry implementation is reviewed and enabled.
 
 ### Generating a Wix API Key
 
