@@ -20,6 +20,42 @@ function validAuthorization(value: unknown): value is string {
   return typeof value === "string" && value.trim() === value && value.length > 0 && value.length <= 8192 && !/[\r\n]/.test(value);
 }
 
+/** A human-readable owner view. The structured payload remains private for support only. */
+function ownerSummary(journey: string, values: Record<string, string | string[]>): string {
+  const pick = (key: string) => {
+    const value = values[key];
+    return Array.isArray(value) ? value.join(", ") : value || "Not provided";
+  };
+  const projectDetails: Array<[string, string]> = journey === "installation"
+    ? [
+        ["Kitchen supplier", "k3d_supplier"],
+        ["Existing kitchen removal", "k3d_removal"],
+        ["Expected delivery", "k3d_delivery_date"],
+        ["Preferred installation start", "k3d_install_start"],
+      ]
+    : [
+        ["Planning stage", "k3d_planning_stage"],
+        ["Style", "k3d_style"],
+        ["Budget guide", "k3d_budget_guide"],
+        ["Preferred project timing", "k3d_project_timing"],
+      ];
+  const rows: Array<[string, string]> = [
+    ["Customer", "k3d_contact_name"],
+    ["Phone", "k3d_contact_phone"],
+    ["Email", "k3d_contact_email"],
+    ["Preferred contact", "k3d_preferred_contact"],
+    ["Project address", "k3d_project_address"],
+    ["Postcode", "k3d_project_postcode"],
+    ...projectDetails,
+    ["Services requested", "k3d_services"],
+    ["Trade arrangement", "k3d_trade_arrangement"],
+    ["Preferred visit date", "k3d_visit_date"],
+    ["Preferred visit time", "k3d_visit_time_preference"],
+    ["Notes", "k3d_project_notes"],
+  ];
+  return rows.map(([label, key]) => `${label}: ${pick(key)}`).join("\n");
+}
+
 /**
  * Insert one private Wix CMS enquiry record. The caller owns the Wix credential;
  * no browser value can select the collection, site, or authorization header.
@@ -55,6 +91,7 @@ export async function writeCmsEnquiryOnce(
             journey: mapped.draft.journey,
             status: "NEW",
             receivedAt: new Date().toISOString(),
+            ownerSummary: ownerSummary(mapped.draft.journey, mapped.draft.values),
             payload: { values: mapped.draft.values },
           },
         },
