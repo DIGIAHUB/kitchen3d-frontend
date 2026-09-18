@@ -90,11 +90,12 @@ export async function sendEnquiryOnce(
 
   const expected = prepared.expectedReceipt;
   const sentValues = prepared.submission.submissions;
-  const uncertain = (): EnquiryReceiptResult => ({
-    state: "UNCONFIRMED", code: "UNEXPECTED_RECEIPT", nextAction: "RECONCILE_BEFORE_RETRY",
+  const uncertain = (code: Extract<EnquiryReceiptResult, { state: "UNCONFIRMED" }>["code"] = "UNEXPECTED_RECEIPT"): EnquiryReceiptResult => ({
+    state: "UNCONFIRMED", code, nextAction: "RECONCILE_BEFORE_RETRY",
     automaticRetryAllowed: false, appointmentConfirmed: false,
   });
   const controller = new AbortController();
+  let providerStatus: number | undefined;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const deadline = new Promise<never>((_, reject) => {
     timer = setTimeout(() => { controller.abort(); reject(new Error("Delivery deadline")); }, DELIVERY_TIMEOUT_MS);
@@ -107,7 +108,7 @@ export async function sendEnquiryOnce(
         body,
       });
       // Do not read or surface a provider error body (may contain personal data).
-      if (!response.ok) throw new Error("Delivery unconfirmed");
+      if (!response.ok) { providerStatus = response.status; throw new Error("Delivery unconfirmed"); }
       return readReceipt(response, controller.signal);
     })(), deadline]);
     if (!envelope || typeof envelope !== "object" || !("submission" in envelope)) return uncertain();
@@ -122,6 +123,6 @@ export async function sendEnquiryOnce(
     return result;
   } catch {
     controller.abort();
-    return uncertain();
+    return uncertain(providerStatus === undefined ? undefined : `WIX_HTTP_${providerStatus}`);
   } finally { clearTimeout(timer); }
 }

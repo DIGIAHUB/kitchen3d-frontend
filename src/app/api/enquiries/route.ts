@@ -31,5 +31,6 @@ export async function POST(request: Request) {
     binding: liveEnquiryBindings[journey], authorization, captchaToken: parsed.value.captchaToken,
   }, fetch);
   if (result.state === "CONFIRMED") return Response.json({ status: "received" }, { status: 201, headers });
+  console.warn("K3D Wix Forms delivery unconfirmed", { code: result.code });
   return Response.json({ status: "temporarily_unavailable" }, { status: 503, headers });
 }

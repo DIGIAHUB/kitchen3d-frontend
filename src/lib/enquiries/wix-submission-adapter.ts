@@ -104,7 +104,7 @@ export type EnquiryReceiptResult = {
   automaticRetryAllowed: false;
 } | {
   state: "UNCONFIRMED";
-  code: "INVALID_EXPECTATION" | "UNEXPECTED_RECEIPT" | "SUBMISSION_PENDING" | "UNEXPECTED_PAYMENT";
+  code: "INVALID_EXPECTATION" | "UNEXPECTED_RECEIPT" | "SUBMISSION_PENDING" | "UNEXPECTED_PAYMENT" | `WIX_HTTP_${number}`;
   nextAction: "RECONCILE_BEFORE_RETRY";
   appointmentConfirmed: false;
   automaticRetryAllowed: false;

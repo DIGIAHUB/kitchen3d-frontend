@@ -178,7 +178,7 @@ await check("live route keeps its server-side submission boundary", () => {
   assert.match(source, /sendEnquiryOnce/);
   assert.match(source, /https:\/\/kitchen3d\.co\.uk/);
   assert.match(source, /appointment is created/i);
-  assert.doesNotMatch(source, /console\./);
+  assert.match(source, /console\.warn\("K3D Wix Forms delivery unconfirmed", \{ code: result\.code \}\)/);
   assert.doesNotMatch(source, /process\.env\.WIX_FORMS_API_KEY/);
 });
 const { coordinateEnquiry } = load("delivery-coordinator");
