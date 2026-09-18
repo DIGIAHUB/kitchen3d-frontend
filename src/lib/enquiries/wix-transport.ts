@@ -12,7 +12,8 @@ export const RECEIPT_MAX_BYTES = 65_536;
 export type WixEnquiryTransportConfig = {
   binding: unknown;
   authorization: string;
-  captchaToken: string;
+  /** Optional for authenticated server-to-server native Wix Form submissions. */
+  captchaToken?: string;
 };
 export type DeliveryResult = EnquiryReceiptResult | {
   state: "NOT_SENT";
@@ -81,11 +82,12 @@ export async function sendEnquiryOnce(
   try {
     const suppliedAuthorization = config.authorization;
     const suppliedCaptcha = config.captchaToken;
-    if (!safeToken(suppliedAuthorization, 8192) || !safeToken(suppliedCaptcha, 3000)) return notSent("INVALID_CONFIGURATION");
+    if (!safeToken(suppliedAuthorization, 8192)
+      || (suppliedCaptcha !== undefined && !safeToken(suppliedCaptcha, 3000))) return notSent("INVALID_CONFIGURATION");
     prepared = prepareEnquirySubmission(input, context, config.binding);
     if (!prepared.ok) return notSent("code" in prepared ? prepared.code : "INVALID_ENQUIRY");
     authorization = suppliedAuthorization;
-    body = JSON.stringify({ submission: prepared.submission, captchaToken: suppliedCaptcha });
+    body = JSON.stringify({ submission: prepared.submission, ...(suppliedCaptcha ? { captchaToken: suppliedCaptcha } : {}) });
   } catch { return notSent("INVALID_CONFIGURATION"); }
 
   const expected = prepared.expectedReceipt;
