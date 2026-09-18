@@ -107,7 +107,12 @@ export async function sendEnquiryOnce(
         body,
       });
       // Do not read or surface a provider error body (may contain personal data).
-      if (!response.ok) throw new Error("Delivery unconfirmed");
+      if (!response.ok) {
+        // Status-only operational evidence for the site operator. Never log
+        // the submission, captcha, credentials, headers, or provider body.
+        console.error("K3D_ENQUIRY_PROVIDER_STATUS", response.status);
+        throw new Error("Delivery unconfirmed");
+      }
       return readReceipt(response, controller.signal);
     })(), deadline]);
     if (!envelope || typeof envelope !== "object" || !("submission" in envelope)) return uncertain();

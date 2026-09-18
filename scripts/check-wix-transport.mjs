@@ -9,11 +9,21 @@ const timers = new Map();
 let timerId = 0;
 let checks = 0;
 let intercepted = 0;
+const providerStatusLogs = [];
 const forbidden = () => { throw new Error("Unexpected real network or logging"); };
 const sandbox = vm.createContext({
   Uint8Array, TextDecoder, AbortController,
   fetch: forbidden, XMLHttpRequest: forbidden, WebSocket: forbidden,
-  console: { log: forbidden, warn: forbidden, error: forbidden },
+  console: {
+    log: forbidden,
+    warn: forbidden,
+    error: (...args) => {
+      assert.equal(args.length, 2);
+      assert.equal(args[0], "K3D_ENQUIRY_PROVIDER_STATUS");
+      assert.ok(Number.isInteger(args[1]) && args[1] >= 100 && args[1] <= 599);
+      providerStatusLogs.push(args[1]);
+    },
+  },
   setTimeout: (fn, ms) => { assert.ok([5000, 10000].includes(ms)); timers.set(++timerId, fn); return timerId; },
   clearTimeout: id => timers.delete(id),
 });
@@ -128,8 +138,10 @@ for (const binding of [null, {}, { ...configFor(sample.journey).binding, siteId:
 }
 for (const status of [301, 400, 401, 403, 404, 428, 429, 500, 503]) {
   await check("HTTP failure " + status + " without error-body read", async () => {
+    const logCount = providerStatusLogs.length;
     const { result } = await call(sample, undefined, () => ({ ok: false, status, get body() { throw new Error("Must not read error body"); } }));
     assert.equal(result.state, "UNCONFIRMED");
+    assert.deepEqual(providerStatusLogs.slice(logCount), [status]);
   });
 }
 for (const makeResponse of [
