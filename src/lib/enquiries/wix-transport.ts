@@ -12,7 +12,6 @@ export const RECEIPT_MAX_BYTES = 65_536;
 export type WixEnquiryTransportConfig = {
   binding: unknown;
   authorization: string;
-  captchaToken: string;
 };
 export type DeliveryResult = EnquiryReceiptResult | {
   state: "NOT_SENT";
@@ -64,7 +63,7 @@ async function readReceipt(response: Response, signal: AbortSignal): Promise<unk
 /** Exactly one attempt; any uncertain outcome requires reconciliation, never a
  * blind retry. An injected transport is mandatory. Synthetic tests provide all
  * configuration and requests; the route supplies only server-owned values.
- * REST envelope: { submission, captchaToken }; response: { submission }.
+ * REST envelope: { submission }; response: { submission }.
  */
 export async function sendEnquiryOnce(
   input: unknown,
@@ -80,12 +79,11 @@ export async function sendEnquiryOnce(
   let authorization: string;
   try {
     const suppliedAuthorization = config.authorization;
-    const suppliedCaptcha = config.captchaToken;
-    if (!safeToken(suppliedAuthorization, 8192) || !safeToken(suppliedCaptcha, 3000)) return notSent("INVALID_CONFIGURATION");
+    if (!safeToken(suppliedAuthorization, 8192)) return notSent("INVALID_CONFIGURATION");
     prepared = prepareEnquirySubmission(input, context, config.binding);
     if (!prepared.ok) return notSent("code" in prepared ? prepared.code : "INVALID_ENQUIRY");
     authorization = suppliedAuthorization;
-    body = JSON.stringify({ submission: prepared.submission, captchaToken: suppliedCaptcha });
+    body = JSON.stringify({ submission: prepared.submission });
   } catch { return notSent("INVALID_CONFIGURATION"); }
 
   const expected = prepared.expectedReceipt;

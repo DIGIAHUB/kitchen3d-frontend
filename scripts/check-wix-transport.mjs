@@ -45,7 +45,7 @@ const samples = [
 const context = intoRealm({ today: "2026-09-17" });
 const configFor = journey => intoRealm({
   binding: { siteId: adapter.KITCHEN3D_ENQUIRY_SITE_ID, journey, formId, namespace: "wix.form_app.form", fieldTypes: adapter.expectedEnquiryTargets[journey] },
-  authorization: "synthetic-not-a-credential", captchaToken: "synthetic-captcha",
+  authorization: "synthetic-not-a-credential",
 });
 async function check(name, run) {
   try { await run(); assert.equal(timers.size, 0); checks++; }
@@ -66,8 +66,7 @@ async function call(sample, config = configFor(sample.journey), responder = (_, 
     assert.equal(init.headers["wix-site-id"], adapter.KITCHEN3D_ENQUIRY_SITE_ID);
     assert.equal(init.headers.Authorization, "synthetic-not-a-credential");
     const body = JSON.parse(init.body);
-    assert.deepEqual(Object.keys(body).sort(), ["captchaToken", "submission"]);
-    assert.equal(body.captchaToken, "synthetic-captcha");
+    assert.deepEqual(Object.keys(body).sort(), ["submission"]);
     return responder(url, init);
   });
   assert.ok(count <= 1, "Never automatically retry");
@@ -112,7 +111,7 @@ for (const sample of samples) {
   });
 }
 const sample = samples[0];
-for (const [key, value] of [["authorization", ""], ["authorization", "bad\nheader"], ["authorization", "a".repeat(8193)], ["captchaToken", ""], ["captchaToken", "x".repeat(3001)], ["captchaToken", " leading"]]) {
+for (const [key, value] of [["authorization", ""], ["authorization", "bad\nheader"], ["authorization", "a".repeat(8193)]]) {
   await check("invalid token before network", async () => {
     const config = configFor(sample.journey); config[key] = value;
     const { result, count } = await call(sample, config);

@@ -25,30 +25,6 @@ function subscribeToDay(onChange: () => void) {
 }
 function serverDay() { return ""; }
 
-const wixInvisibleRecaptchaKey = "6LdoPaUfAAAAAJphvHoUoOob7mx0KDlXyXlgrx5v";
-
-declare global {
-  interface Window { grecaptcha?: { enterprise?: { ready: (callback: () => void) => void; execute: (siteKey: string, options: { action: string }) => Promise<string> } } }
-}
-
-function getCaptchaToken(): Promise<string> {
-  const execute = () => new Promise<string>((resolve, reject) => {
-    const enterprise = window.grecaptcha?.enterprise;
-    if (!enterprise) { reject(new Error("CAPTCHA_UNAVAILABLE")); return; }
-    enterprise.ready(() => enterprise.execute(wixInvisibleRecaptchaKey, { action: "kitchen3d_enquiry" }).then(resolve, reject));
-  });
-  if (window.grecaptcha?.enterprise) return execute();
-  return new Promise((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>('script[data-k3d-recaptcha="1"]');
-    const script = existing || document.createElement("script");
-    const settle = () => execute().then(resolve, reject);
-    script.addEventListener("load", settle, { once: true });
-    script.addEventListener("error", () => reject(new Error("CAPTCHA_UNAVAILABLE")), { once: true });
-    if (!existing) { script.src = "https://www.google.com/recaptcha/enterprise.js?render=" + encodeURIComponent(wixInvisibleRecaptchaKey); script.async = true; script.dataset.k3dRecaptcha = "1"; document.head.appendChild(script); }
-    else if (window.grecaptcha?.enterprise) settle();
-  });
-}
-
 export function EnquiryWizard({ journey, live = false }: { journey: Journey; live?: boolean }) {
   const installation = journey === "installation";
   const [step, setStep] = useState(0);
@@ -98,13 +74,12 @@ export function EnquiryWizard({ journey, live = false }: { journey: Journey; liv
     if (submitting || fileError || files.length) return;
     setSubmitting(true); setSubmissionError("");
     try {
-      const captchaToken = await getCaptchaToken();
       const input = {
         journey, ...(installation ? { supplier: answers.supplier, removal: answers.removal, delivery: answers.delivery, start: answers.start } : { stage: answers.stage, style: answers.style, budget: answers.budget, start: answers.start }),
         selectedServices, trades: answers.trades, files: [], visit: answers.visit, time: answers.time, notes: answers.notes,
         name: answers.name, postcode: answers.postcode, address: answers.address, phone: answers.phone, email: answers.email, contact: answers.contact,
       };
-      const response = await fetch("/api/enquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ input, captchaToken }), credentials: "same-origin" });
+      const response = await fetch("/api/enquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ input }), credentials: "same-origin" });
       if (!response.ok || (await response.json() as { status?: unknown }).status !== "received") throw new Error("NOT_RECEIVED");
       setAnswers(initialAnswers); setSelectedServices([]); setFiles([]); setComplete(true);
     } catch { setSubmissionError("We could not confirm receipt of your enquiry. Please call Reza on 07882 116 895 or email kitchen3dltd@gmail.com."); }

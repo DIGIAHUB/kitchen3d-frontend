@@ -49,7 +49,7 @@ async function storeStep<T>(action: (signal: AbortSignal) => Promise<T>): Promis
 
 /** Server integration only, disconnected from HTTP/UI. actorKey must be a
  * server-derived opaque rate-limit key (not a trusted client/IP-header value).
- * A real quota backend, CAPTCHA path, privacy and site bindings remain required.
+ * A real quota backend, privacy and site bindings remain required.
  * No in-process Map fallback: that would not protect concurrent server workers.
  */
 export async function coordinateEnquiry(
@@ -80,7 +80,7 @@ export async function coordinateEnquiry(
     stableContext = { today: context.today };
     stableConfig = {
       binding: JSON.parse(JSON.stringify(config.binding)) as unknown,
-      authorization: config.authorization, captchaToken: config.captchaToken,
+      authorization: config.authorization,
     };
     fingerprint = createHmac("sha256", dependencies.fingerprintSecret)
       .update(JSON.stringify(prepared.submission)).digest("hex");
