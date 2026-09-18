@@ -21,7 +21,8 @@ function londonToday() {
 
 function subscribeToDay(onChange: () => void) {
   const timer = setInterval(onChange, 60_000);
-  return () => clearInterval(timer);
+  const initial = setTimeout(onChange, 0);
+  return () => { clearInterval(timer); clearTimeout(initial); };
 }
 function serverDay() { return ""; }
 
