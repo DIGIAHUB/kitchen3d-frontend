@@ -84,7 +84,10 @@ for (const sample of samples) {
     const result = await sendEnquiryOnce(intoRealm(sample), context, configFor(sample.journey));
     assert.equal(result.code, "TRANSPORT_DISABLED");
   });
-  for (const status of ["PENDING", "PAYMENT_WAITING", "PAYMENT_CANCELED", "OTHER", null]) {
+  await check(sample.journey + ": PENDING Wix Form receipt is accepted", async () => {
+    assert.equal((await call(sample, undefined, (_, init) => confirmed(init, { status: "PENDING" }))).result.state, "CONFIRMED");
+  });
+  for (const status of ["PAYMENT_WAITING", "PAYMENT_CANCELED", "OTHER", null]) {
     await check(sample.journey + ": status " + status, async () => {
       assert.equal((await call(sample, undefined, (_, init) => confirmed(init, { status }))).result.state, "UNCONFIRMED");
     });

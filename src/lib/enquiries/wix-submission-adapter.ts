@@ -112,7 +112,9 @@ export type EnquiryReceiptResult = {
 
 /** Classify a submission object obtained by a FUTURE trusted transport.
  * No HTTP envelope is guessed; raw error bodies must not be passed to the UI.
- * Matching form, namespace, nonempty native ID and CONFIRMED status are required.
+ * Matching form, namespace, nonempty native ID and a Wix Forms accepted status
+ * are required. Native Forms can acknowledge a new submission as PENDING;
+ * that is accepted delivery, never an appointment or order confirmation.
  * Transport/authenticity/idempotency verification belongs outside this pure helper.
  */
 export function classifyEnquiryReceipt(submission: unknown, expected: ExpectedReceipt): EnquiryReceiptResult {
@@ -124,10 +126,9 @@ export function classifyEnquiryReceipt(submission: unknown, expected: ExpectedRe
     || !guid(expected.formId) || expected.namespace !== FORM_NAMESPACE) return unconfirmed("INVALID_EXPECTATION");
   if (!dataRecord(submission) || !guid(submission.id) || submission.formId !== expected.formId
     || submission.namespace !== expected.namespace) return unconfirmed("UNEXPECTED_RECEIPT");
-  if (submission.status === "PENDING") return unconfirmed("SUBMISSION_PENDING");
   if (submission.status === "PAYMENT_WAITING" || submission.status === "PAYMENT_CANCELED") return unconfirmed("UNEXPECTED_PAYMENT");
   // An enquiry cannot create an appointment or order. Reject crossed workflows.
-  if (submission.status !== "CONFIRMED" || submission.appointmentDetails != null || submission.orderDetails != null) {
+  if ((submission.status !== "CONFIRMED" && submission.status !== "PENDING") || submission.appointmentDetails != null || submission.orderDetails != null) {
     return unconfirmed("UNEXPECTED_RECEIPT");
   }
   return { state: "CONFIRMED", submissionId: submission.id, appointmentConfirmed: false, automaticRetryAllowed: false };

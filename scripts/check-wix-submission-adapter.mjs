@@ -137,7 +137,12 @@ check("matching CONFIRMED submission is interpreted without booking or retry", (
     state: "CONFIRMED", submissionId: syntheticSubmissionId, appointmentConfirmed: false, automaticRetryAllowed: false,
   });
 });
-for (const status of ["PENDING", "PAYMENT_WAITING", "PAYMENT_CANCELED", "CONFIRMED_WITH_PAYMENT", "", null]) {
+check("matching PENDING Wix Forms submission is accepted without booking or retry", () => {
+  assert.deepEqual(copy(classifyEnquiryReceipt({ ...receipt, status: "PENDING" }, expected)), {
+    state: "CONFIRMED", submissionId: syntheticSubmissionId, appointmentConfirmed: false, automaticRetryAllowed: false,
+  });
+});
+for (const status of ["PAYMENT_WAITING", "PAYMENT_CANCELED", "CONFIRMED_WITH_PAYMENT", "", null]) {
   check(`status ${status} is not enquiry confirmation`, () => {
     const result = classifyEnquiryReceipt({ ...receipt, status }, expected);
     assert.equal(result.state, "UNCONFIRMED");
@@ -187,7 +192,7 @@ for (const input of samples) {
     const receiptExpectation = copy(prepared.expectedReceipt);
     // Simulated provider objects only. Nothing executes an HTTP submission.
     assert.equal(classifyEnquiryReceipt(receipt, receiptExpectation).state, "CONFIRMED");
-    assert.equal(classifyEnquiryReceipt({ ...receipt, status: "PENDING" }, receiptExpectation).state, "UNCONFIRMED");
+    assert.equal(classifyEnquiryReceipt({ ...receipt, status: "PENDING" }, receiptExpectation).state, "CONFIRMED");
   });
   await checkAsync(`${input.journey}: parsed customer body cannot choose a target form`, async () => {
     const parsed = await readEnquiryJson(new Request(`${syntheticOrigin}/api/enquiries`, {
