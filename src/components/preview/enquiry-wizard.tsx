@@ -28,20 +28,24 @@ function serverDay() { return ""; }
 const wixInvisibleRecaptchaKey = "6LdoPaUfAAAAAJphvHoUoOob7mx0KDlXyXlgrx5v";
 
 declare global {
-  interface Window { grecaptcha?: { enterprise?: { execute: (siteKey: string, options: { action: string }) => Promise<string> } } }
+  interface Window { grecaptcha?: { enterprise?: { ready: (callback: () => void) => void; execute: (siteKey: string, options: { action: string }) => Promise<string> } } }
 }
 
 function getCaptchaToken(): Promise<string> {
-  if (window.grecaptcha?.enterprise) return window.grecaptcha.enterprise.execute(wixInvisibleRecaptchaKey, { action: "kitchen3d_enquiry" });
+  const execute = () => new Promise<string>((resolve, reject) => {
+    const enterprise = window.grecaptcha?.enterprise;
+    if (!enterprise) { reject(new Error("CAPTCHA_UNAVAILABLE")); return; }
+    enterprise.ready(() => enterprise.execute(wixInvisibleRecaptchaKey, { action: "kitchen3d_enquiry" }).then(resolve, reject));
+  });
+  if (window.grecaptcha?.enterprise) return execute();
   return new Promise((resolve, reject) => {
     const existing = document.querySelector<HTMLScriptElement>('script[data-k3d-recaptcha="1"]');
     const script = existing || document.createElement("script");
-    const settle = () => window.grecaptcha?.enterprise
-      ? window.grecaptcha.enterprise.execute(wixInvisibleRecaptchaKey, { action: "kitchen3d_enquiry" }).then(resolve, reject)
-      : reject(new Error("CAPTCHA_UNAVAILABLE"));
+    const settle = () => execute().then(resolve, reject);
     script.addEventListener("load", settle, { once: true });
     script.addEventListener("error", () => reject(new Error("CAPTCHA_UNAVAILABLE")), { once: true });
     if (!existing) { script.src = "https://www.google.com/recaptcha/enterprise.js?render=" + encodeURIComponent(wixInvisibleRecaptchaKey); script.async = true; script.dataset.k3dRecaptcha = "1"; document.head.appendChild(script); }
+    else if (window.grecaptcha?.enterprise) settle();
   });
 }
 
