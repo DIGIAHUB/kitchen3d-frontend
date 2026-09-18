@@ -17,12 +17,18 @@ function londonToday(): string {
 /** One server-side Wix Forms submission attempt. No appointment is created. */
 export async function POST(request: Request) {
   const parsed = await readEnquiryJson(request, origin);
-  if (!parsed.ok || !isRecord(parsed.value) || Object.keys(parsed.value).length !== 2
+  if (!parsed.ok) {
+    console.warn("K3D enquiry request rejected", { reason: parsed.error });
+    return Response.json({ status: "not_received" }, { status: 400, headers });
+  }
+  if (!isRecord(parsed.value) || Object.keys(parsed.value).length !== 2
     || !isRecord(parsed.value.input) || typeof parsed.value.captchaToken !== "string") {
+    console.warn("K3D enquiry request rejected", { reason: "INVALID_ENVELOPE" });
     return Response.json({ status: "not_received" }, { status: 400, headers });
   }
   const journey = parsed.value.input.journey;
   if (journey !== "installation" && journey !== "complete") {
+    console.warn("K3D enquiry request rejected", { reason: "INVALID_JOURNEY" });
     return Response.json({ status: "not_received" }, { status: 400, headers });
   }
   const authorization = wixFormsAuthorization();
