@@ -13,7 +13,8 @@
     "check:inventory": "node scripts/check-inventory.mjs",
     "check:content": "node scripts/check-content.mjs",
     "check:form-evidence": "node scripts/check-native-enquiry-form-evidence.mjs",
-    "validate:local": "npm run lint && npm run typecheck && npm run check:inventory && npm run check:content && npm run check:form-evidence"
+    "check:upload-intake": "node scripts/check-upload-intake.mjs",
+    "validate:local": "npm run lint && npm run typecheck && npm run check:inventory && npm run check:content && npm run check:form-evidence && npm run check:upload-intake"
   },
   "dependencies": {
     "react": "19.3.0",

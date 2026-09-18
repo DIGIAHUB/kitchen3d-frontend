@@ -25,3 +25,9 @@ No broader retention period or marketing permission is inferred.
 the immutable first-receipt timestamp plus 90 24-hour days in UTC. It handles
 no customer records and performs no deletion. Actual deployment requires a
 verified storage/file association, access controls and deletion workflow.
+
+`src/lib/enquiries/upload-intake.ts` adds a disconnected server-side signature
+check for JPG, PNG, WebP and PDF bytes. It has no request reader, storage client
+or activation path; `npm run check:upload-intake` is synthetic-only. MIME and
+signature checks are necessary but not sufficient: private storage, malware
+scanning, access controls, association and deletion evidence remain required.
