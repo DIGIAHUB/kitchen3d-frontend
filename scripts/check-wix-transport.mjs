@@ -183,15 +183,15 @@ await check("client runtime cannot invoke transport", async () => {
   try { assert.equal((await call(sample)).result.code, "TRANSPORT_DISABLED"); }
   finally { delete sandbox.window; }
 });
-await check("live route keeps its server-side submission boundary", () => {
+await check("live route keeps its server-side CMS write boundary", () => {
   const source = readFileSync(new URL("../src/app/api/enquiries/route.ts", import.meta.url), "utf8");
   assert.match(source, /readEnquiryJson/);
-  assert.match(source, /liveEnquiryBindings/);
-  assert.match(source, /sendEnquiryOnce/);
+  assert.match(source, /wixCmsAuthorization/);
+  assert.match(source, /writeCmsEnquiryOnce/);
   assert.match(source, /https:\/\/kitchen3d\.co\.uk/);
   assert.match(source, /appointment is created/i);
   assert.doesNotMatch(source, /console\./);
-  assert.doesNotMatch(source, /process\.env\.WIX_FORMS_API_KEY/);
+  assert.doesNotMatch(source, /process\.env\.WIX_API_KEY/);
 });
 const { coordinateEnquiry } = load("delivery-coordinator");
 const requestKey = "33333333-3333-4333-8333-333333333333";

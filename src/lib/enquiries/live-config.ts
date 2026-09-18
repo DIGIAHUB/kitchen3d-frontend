@@ -24,3 +24,9 @@ export function wixFormsAuthorization(): string | null {
   const value = process.env.WIX_FORMS_API_KEY;
   return typeof value === "string" && value.trim() === value && value.length > 0 ? value : null;
 }
+
+/** Server-only credential for the private Kitchen3D CMS enquiry inbox. */
+export function wixCmsAuthorization(): string | null {
+  const value = process.env.WIX_API_KEY;
+  return typeof value === "string" && value.trim() === value && value.length > 0 ? value : null;
+}

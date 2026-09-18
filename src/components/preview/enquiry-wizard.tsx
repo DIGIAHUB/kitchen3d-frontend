@@ -26,40 +26,6 @@ function subscribeToDay(onChange: () => void) {
 }
 function serverDay() { return ""; }
 
-const wixInvisibleRecaptchaKey = "6LdoPaUfAAAAAJphvHoUoOob7mx0KDlXyXlgrx5v";
-
-declare global {
-  interface Window { grecaptcha?: { enterprise?: { ready: (callback: () => void) => void; execute: (siteKey: string, options: { action: string }) => Promise<string> } } }
-}
-
-function executeCaptcha(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const enterprise = window.grecaptcha?.enterprise;
-    if (!enterprise) { reject(new Error("CAPTCHA_UNAVAILABLE")); return; }
-    const timeout = window.setTimeout(() => reject(new Error("CAPTCHA_UNAVAILABLE")), 12_000);
-    enterprise.ready(() => {
-      void enterprise.execute(wixInvisibleRecaptchaKey, { action: "kitchen3d_enquiry" })
-        .then(token => {
-          window.clearTimeout(timeout);
-          if (typeof token === "string" && token.length > 0) resolve(token);
-          else reject(new Error("CAPTCHA_UNAVAILABLE"));
-        }, error => { window.clearTimeout(timeout); reject(error); });
-    });
-  });
-}
-
-function getCaptchaToken(): Promise<string> {
-  if (window.grecaptcha?.enterprise) return executeCaptcha();
-  return new Promise((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>('script[data-k3d-recaptcha="1"]');
-    const script = existing || document.createElement("script");
-    const settle = () => window.grecaptcha?.enterprise ? executeCaptcha().then(resolve, reject) : reject(new Error("CAPTCHA_UNAVAILABLE"));
-    script.addEventListener("load", settle, { once: true });
-    script.addEventListener("error", () => reject(new Error("CAPTCHA_UNAVAILABLE")), { once: true });
-    if (!existing) { script.src = "https://www.google.com/recaptcha/enterprise.js?render=" + encodeURIComponent(wixInvisibleRecaptchaKey); script.async = true; script.dataset.k3dRecaptcha = "1"; document.head.appendChild(script); }
-  });
-}
-
 export function EnquiryWizard({ journey, live = false }: { journey: Journey; live?: boolean }) {
   const installation = journey === "installation";
   const [step, setStep] = useState(0);
@@ -73,6 +39,7 @@ export function EnquiryWizard({ journey, live = false }: { journey: Journey; liv
   const today = useSyncExternalStore(subscribeToDay, londonToday, serverDay);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const previousStep = useRef(0);
+  const requestKey = useRef<string | null>(null);
 
   useEffect(() => {
     if (previousStep.current !== step || complete) headingRef.current?.focus();
@@ -101,7 +68,7 @@ export function EnquiryWizard({ journey, live = false }: { journey: Journey; liv
   }
 
   function reset() {
-    setAnswers(initialAnswers); setSelectedServices([]); setFiles([]); setFileError(""); setSubmissionError(""); setStep(0); setComplete(false);
+    setAnswers(initialAnswers); setSelectedServices([]); setFiles([]); setFileError(""); setSubmissionError(""); setStep(0); setComplete(false); requestKey.current = null;
     headingRef.current?.focus();
   }
 
@@ -109,13 +76,13 @@ export function EnquiryWizard({ journey, live = false }: { journey: Journey; liv
     if (submitting || fileError || files.length) return;
     setSubmitting(true); setSubmissionError("");
     try {
-      const captchaToken = await getCaptchaToken();
+      requestKey.current ||= crypto.randomUUID();
       const input = {
         journey, ...(installation ? { supplier: answers.supplier, removal: answers.removal, delivery: answers.delivery, start: answers.start } : { stage: answers.stage, style: answers.style, budget: answers.budget, start: answers.start }),
         selectedServices, trades: answers.trades, files: [], visit: answers.visit, time: answers.time, notes: answers.notes,
         name: answers.name, postcode: answers.postcode, address: answers.address, phone: answers.phone, email: answers.email, contact: answers.contact,
       };
-      const response = await fetch("/api/enquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ input, captchaToken }), credentials: "same-origin" });
+      const response = await fetch("/api/enquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ input, requestKey: requestKey.current }), credentials: "same-origin" });
       if (!response.ok || (await response.json() as { status?: unknown }).status !== "received") throw new Error("NOT_RECEIVED");
       setAnswers(initialAnswers); setSelectedServices([]); setFiles([]); setComplete(true);
     } catch { setSubmissionError("We could not confirm receipt of your enquiry. Please call Reza on 07882 116 895 or email kitchen3dltd@gmail.com."); }
@@ -131,7 +98,7 @@ export function EnquiryWizard({ journey, live = false }: { journey: Journey; liv
     <div className="enquiry-layout">
       <aside className="enquiry-aside"><p className="eyebrow">{installation ? "01 / READY TO FIT" : "02 / FROM THE BEGINNING"}</p><h1>{installation ? <>Your kitchen.<br /><em>Let’s get it fitted.</em></> : <>Your ideas.<br /><em>A fresh beginning.</em></>}</h1><p>{installation ? "Tell Reza what you’ve chosen and what you need help with. You can add your plans, dates and any finishing touches." : "You don’t need a finished design. Share what you have in mind and we’ll start with a conversation about your space."}</p><div className="visit-card"><span className="visit-icon" aria-hidden="true">↗</span><h2>Let’s see the possibilities.</h2><p>A free, no-obligation site visit.<br />Up to 45 minutes at your property.</p><span>Discuss · Measure · Explore</span></div><p className="aside-help">Prefer to talk it through?<br /><a href="tel:07882116895">Call Reza · 07882 116 895</a></p></aside>
       <div className="wizard-panel">
-        {live ? <div className="form-preview-note"><strong>Send your enquiry securely.</strong> A preferred visit date is a request, not a confirmed booking.</div> : <div className="form-preview-note"><strong>Try the journey with sample details.</strong> Nothing is sent or uploaded. Entries stay in this page’s memory, not browser storage.</div>}
+        {live ? <div className="form-preview-note"><strong>Send your enquiry.</strong> A preferred visit date is a request, not a confirmed booking.</div> : <div className="form-preview-note"><strong>Try the journey with sample details.</strong> Nothing is sent or uploaded. Entries stay in this page’s memory, not browser storage.</div>}
         {!complete ? <>
           <ol className="wizard-progress" aria-label="Enquiry progress">{steps.map((name, index) => <li key={name} aria-current={step === index ? "step" : undefined} className={step > index ? "finished" : ""}><span>{step > index ? "✓" : index + 1}</span><small>{name}</small></li>)}</ol>
           <div className="wizard-heading"><p className="eyebrow">STEP {step + 1} OF 4</p><h2 tabIndex={-1} ref={headingRef}>{[installation ? "What have you chosen?" : "What do you have in mind?", "A few helpful details.", "How can Reza reach you?", "Does everything look right?"][step]}</h2><p>{["Required fields are marked *. The rest can wait.", "Share what you know. It’s fine if some details are still undecided.", live ? "Your contact details are used only to respond to this enquiry." : "Use sample details for this preview, not personal information.", live ? "Send only when the details are ready. This does not book an appointment." : "This is a local review only. No request has been sent."][step]}</p></div>
