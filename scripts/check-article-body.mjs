@@ -40,12 +40,13 @@ function compile(relative, mocks) {
   return result.exports;
 }
 const routing = compile("../src/lib/migration-routes.ts",{});
+const releaseMetadata = compile("../src/lib/release-metadata.ts",{});
 const api = {getPageBySlug:async()=>{reads++; return null;},getAllPages:async()=>[],getPostBySlug:async()=>null,getAllPosts:async()=>{
   reads++;
   return [{slug:"article-test",title:"Sample",date:"2026-09-17",excerpt:"",bodyJson:fixtureBody,link:"javascript:bad"},{slug:heldSlug,title:"Held wardrobe",bodyJson:fixtureBody}];
 }};
 const pageBody = compile("../src/lib/page-body.ts",{});
-const page = compile("../src/app/[slug]/page.tsx",{"@/lib/service-pages":api,"@/lib/articles":api,"@/lib/migration-routes":routing,"@/lib/article-body":loaded.exports,"@/lib/page-body":pageBody,"next/navigation":{notFound(){throw new Error("NOT_FOUND");}}});
+const page = compile("../src/app/[slug]/page.tsx",{"@/lib/service-pages":api,"@/lib/articles":api,"@/lib/migration-routes":routing,"@/lib/release-metadata":releaseMetadata,"@/lib/article-body":loaded.exports,"@/lib/page-body":pageBody,"next/navigation":{notFound(){throw new Error("NOT_FOUND");}}});
 fixtureBody = JSON.stringify({...valid,blocks:[{type:"heading",text:"Article heading"},{type:"paragraph",text:'<img src=x onerror="bad()">'},{type:"list-item",text:"A list item"}]});
 let html = renderToStaticMarkup(await page.default({params:{slug:"article-test"}}));
 assert.match(html,/<h2>Article heading<\/h2>/); checks++;

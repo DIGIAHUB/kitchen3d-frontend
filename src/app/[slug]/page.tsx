@@ -7,6 +7,7 @@ import Link from "next/link";
 import { cmsMetadata, isCmsSlug, isHeldArticle, isHeldPage, migrationParams } from "@/lib/migration-routes";
 import { parseArticleBody } from "@/lib/article-body";
 import { parsePageBody } from "@/lib/page-body";
+import { releaseIndexingEnabled } from "@/lib/release-metadata";
 
 export async function generateStaticParams() {
   const [pages, posts] = await Promise.all([getAllPages(), getAllPosts()]);
@@ -27,7 +28,10 @@ export async function generateMetadata(
   const item = page || post;
   if (!item) return {};
   if (page && post) throw new Error("Conflicting CMS migration slug");
-  return cmsMetadata(item);
+  return {
+    ...cmsMetadata(item),
+    robots: { index: releaseIndexingEnabled(), follow: releaseIndexingEnabled() },
+  };
 }
 
 function PageContent({ page }: { page: WixPage }) {
