@@ -65,7 +65,7 @@ export type PreparedEnquirySubmission = {
   ok: true;
   state: "PREPARED_NOT_SENT";
   liveCollectionAllowed: false;
-  submission: { formId: string; submissions: Record<string, string | string[]> };
+  submission: { formId: string; namespace: string; submissions: Record<string, string | string[]> };
   expectedReceipt: { formId: string; namespace: string };
 };
 export type EnquiryPreparationResult = PreparedEnquirySubmission
@@ -91,7 +91,10 @@ export function prepareEnquirySubmission(input: unknown, context: EnquiryValidat
   }
   return {
     ok: true, state: "PREPARED_NOT_SENT", liveCollectionAllowed: false,
-    submission: { formId: binding.formId, submissions },
+    // Wix's submission identity consists of both the form and its owning app.
+    // Keeping the namespace server-owned prevents a customer request from
+    // targeting another form provider.
+    submission: { formId: binding.formId, namespace: binding.namespace, submissions },
     expectedReceipt: { formId: binding.formId, namespace: FORM_NAMESPACE },
   };
 }

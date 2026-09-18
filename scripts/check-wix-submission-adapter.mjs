@@ -75,7 +75,8 @@ for (const input of samples) {
     assert.equal(prepared.state, "PREPARED_NOT_SENT");
     assert.equal(prepared.liveCollectionAllowed, false);
     assert.equal(prepared.submission.formId, syntheticFormId);
-    assert.deepEqual(Object.keys(prepared.submission).sort(), ["formId", "submissions"]);
+    assert.deepEqual(Object.keys(prepared.submission).sort(), ["formId", "namespace", "submissions"]);
+    assert.equal(prepared.submission.namespace, namespace);
     const values = prepared.submission.submissions;
     assert.equal(values.k3d_contact_name, input.name);
     assert.equal(values.k3d_contact_phone, input.phone);
@@ -164,10 +165,12 @@ check("receipt getters rejected without execution", () => {
   assert.equal(calls, 0);
 });
 const routeSource = await readFile(new URL("src/app/api/enquiries/route.ts", root), "utf8");
-check("route does not import preparation or body-reading helpers", () => assert.doesNotMatch(routeSource, /\bimport\b|prepareEnquirySubmission|readEnquiryJson/));
-const route = await load("src/app/api/enquiries/route.ts");
-const disabled = await route.POST(new Proxy({}, { get() { throw new Error("Disabled route must not read any request property"); } }));
-check("route cannot be activated through injected environment", () => assert.equal(disabled.status, 503));
+check("route owns one bounded server transport path", () => {
+  assert.match(routeSource, /readEnquiryJson/);
+  assert.match(routeSource, /liveEnquiryBindings/);
+  assert.match(routeSource, /sendEnquiryOnce/);
+  assert.doesNotMatch(routeSource, /process\.env\.WIX_FORMS_API_KEY/);
+});
 const { readEnquiryJson } = await load("src/lib/enquiries/request-boundary.ts");
 const syntheticOrigin = "https://synthetic.example.invalid";
 for (const input of samples) {
