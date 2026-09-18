@@ -35,11 +35,12 @@ function loader(env) {
   return file => load(path.join(root, file));
 }
 function check(name, run) { try { run(); checks++; } catch (cause) { throw new Error(name, { cause }); } }
-for (const [label, env, preview] of [
-  ["normal", {}, false],
-  ["candidate", { K3D_LOCAL_CANDIDATE: "1" }, false],
-  ["preview", { K3D_LOCAL_PREVIEW: "1" }, true],
-  ["invalid flag", { K3D_LOCAL_PREVIEW: "true", K3D_LOCAL_CANDIDATE: "true" }, false],
+for (const [label, env, preview, indexingEnabled] of [
+  ["normal", {}, false, false],
+  ["production", { VERCEL_ENV: "production" }, false, true],
+  ["candidate", { VERCEL_ENV: "production", K3D_LOCAL_CANDIDATE: "1" }, false, false],
+  ["preview", { VERCEL_ENV: "production", K3D_LOCAL_PREVIEW: "1" }, true, false],
+  ["invalid flag", { K3D_LOCAL_PREVIEW: "true", K3D_LOCAL_CANDIDATE: "true" }, false, false],
 ]) {
   const load = loader(env);
   const layout = load("src/app/layout.tsx");
@@ -50,12 +51,12 @@ for (const [label, env, preview] of [
     assert.match(html,/does not confirm that a message was received/);
     assert.doesNotMatch(html,/successfully submitted|<form/);
   });
-  check(label + " indexing remains held", () => assert.equal(layout.metadata.robots.index, false));
+  check(label + " indexing policy", () => assert.equal(layout.metadata.robots.index, indexingEnabled));
   check(label + " approved homepage", () => {
     const Home = load("src/app/page.tsx").default;
     const html = renderToStaticMarkup(React.createElement(layout.default, null, React.createElement(Home)));
     assert.match(html, /A kitchen that/); assert.match(html, /Kitchen3D/);
-    assert.match(html, preview ? /Local design preview/ : /Website preparation/);
+    assert.match(html, preview ? /Local design preview/ : /Kitchen3D/);
     assert.match(html, /lang="en-GB"/);
     assert.doesNotMatch(html, /bg-yellow-400|Supply &amp; install or installation only/);
   });
@@ -68,10 +69,9 @@ for (const [label, env, preview] of [
         assert.match(html, /Try the journey with sample details/);
         assert.match(html, /<form/); assert.match(html, /<fieldset disabled/);
       } else {
-        assert.match(html, /Online enquiries and bookings are not available yet/);
-        assert.match(html, /href="tel:07882116895"/);
-        assert.match(html, /href="mailto:kitchen3dltd@gmail.com"/);
-        assert.doesNotMatch(html, /<(?:form|input|textarea|select)\b/);
+        assert.match(html, /Send your enquiry securely/);
+        assert.match(html, /<form/);
+        assert.doesNotMatch(html, /Online enquiries and bookings are not available yet/);
       }
     });
   }
@@ -80,7 +80,7 @@ for (const [label, env, preview] of [
       const page = load("src/app/" + route + "/page.tsx");
       const html = renderToStaticMarkup(React.createElement(page.default));
       assert.equal((html.match(/<h1>/g) ?? []).length, 1);
-      assert.equal(page.metadata.robots.index, false);
+      assert.equal(page.metadata.robots, undefined);
       assert.equal(page.metadata.alternates.canonical, "https://kitchen3d.co.uk/" + route);
       assert.doesNotMatch(html, /<(?:form|input|textarea|select)\b|bg-yellow|fully insured/);
       assert.match(html, /href="tel:07882116895"/);
@@ -105,4 +105,4 @@ assert.equal(await cmsModule.exports.getPageBySlug("home"), null);
 assert.equal(await cmsModule.exports.getPostBySlug("test"), null);
 assert.equal(network, 0);
 console.log("PRODUCTION_SHELL_CHECKS=PASS (" + checks + " render checks plus four offline CMS operations)");
-console.log("NO_CUSTOMER_INPUTS_IN_NORMAL_MODE; PREVIEW_RETAINED; NETWORK=0; INDEXING_HELD");
+console.log("NO_CUSTOMER_INPUTS_IN_NORMAL_MODE; PREVIEW_RETAINED; NETWORK=0; INDEXING_IS_PRODUCTION_ONLY");

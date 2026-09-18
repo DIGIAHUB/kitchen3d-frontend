@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   title: "Kitchen project questions",
   description: "Answers about Kitchen3D installation, complete projects, materials, specialist trades, free visits and Greater Manchester coverage.",
   alternates: { canonical: "https://kitchen3d.co.uk/faqs" },
-  robots: { index: false, follow: false },
 };
 export default function FaqsPage() {
   return <InformationPage title="A little clarity before you start" intro="Practical answers to help you prepare for a conversation about your kitchen." sections={[

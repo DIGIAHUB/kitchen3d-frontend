@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   title: "About Kitchen3D",
   description: "Meet the approach behind Kitchen3D: kitchen installation and complete projects across Greater Manchester, with Reza and a clearly agreed scope.",
   alternates: { canonical: "https://kitchen3d.co.uk/about" },
-  robots: { index: false, follow: false },
 };
 export default function AboutPage() {
   return <InformationPage title="A kitchen that works for you" intro="Kitchen3D Ltd helps customers across Greater Manchester take the next step with their kitchen. Start with Reza, your space and what you want to change." sections={[

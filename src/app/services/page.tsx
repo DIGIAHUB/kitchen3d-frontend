@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   title: "Kitchen services in Greater Manchester",
   description: "Explore Kitchen3D kitchen fitting, worktops, flooring, internal wooden doors and coordinated specialist trades. Scope and price are agreed for your project.",
   alternates: { canonical: "https://kitchen3d.co.uk/services" },
-  robots: { index: false, follow: false },
 };
 
 export default function ServicesPage() {

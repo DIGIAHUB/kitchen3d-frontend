@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   title: "Contact Reza at Kitchen3D",
   description: "Speak to Reza about kitchen fitting or a complete kitchen project in Greater Manchester. Arrange a free initial site visit of up to 45 minutes.",
   alternates: { canonical: "https://kitchen3d.co.uk/contact" },
-  robots: { index: false, follow: false },
 };
 export default function ContactPage() {
   return <InformationPage title="Start with a conversation" intro="You do not need every detail worked out. Tell Reza what you have in mind, whether your kitchen is already purchased or you are starting from the beginning." sections={[
